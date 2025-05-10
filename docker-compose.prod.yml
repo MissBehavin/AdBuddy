@@ -4,21 +4,17 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    depends_on:
-      - backend
+      - NEXT_PUBLIC_API_URL=https://api.adtest.com
+    restart: always
 
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - "3001:3001"
     environment:
@@ -29,9 +25,9 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
       - AWS_S3_BUCKET=${AWS_S3_BUCKET}
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - JWT_SECRET=${JWT_SECRET}
+      - NODE_ENV=production
+    restart: always
     depends_on:
       - mongodb
       - rabbitmq
@@ -40,75 +36,70 @@ services:
   copy-service:
     build:
       context: ./services/copy-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - COHERE_API_KEY=${COHERE_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - RABBITMQ_URL=amqp://rabbitmq:5672
-    volumes:
-      - ./services/copy-service:/app
-      - /app/node_modules
+      - NODE_ENV=production
+    restart: always
     depends_on:
       - rabbitmq
 
   graphics-service:
     build:
       context: ./services/graphics-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - STABLE_DIFFUSION_API_KEY=${STABLE_DIFFUSION_API_KEY}
       - RABBITMQ_URL=amqp://rabbitmq:5672
-    volumes:
-      - ./services/graphics-service:/app
-      - /app/node_modules
+      - NODE_ENV=production
+    restart: always
     depends_on:
       - rabbitmq
 
   video-service:
     build:
       context: ./services/video-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - PICTORY_API_KEY=${PICTORY_API_KEY}
       - SYNTHESIA_API_KEY=${SYNTHESIA_API_KEY}
       - RABBITMQ_URL=amqp://rabbitmq:5672
-    volumes:
-      - ./services/video-service:/app
-      - /app/node_modules
+      - NODE_ENV=production
+    restart: always
     depends_on:
       - rabbitmq
 
   audio-service:
     build:
       context: ./services/audio-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
       - RABBITMQ_URL=amqp://rabbitmq:5672
-    volumes:
-      - ./services/audio-service:/app
-      - /app/node_modules
+      - NODE_ENV=production
+    restart: always
     depends_on:
       - rabbitmq
 
   storage-service:
     build:
       context: ./services/storage-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
       - AWS_S3_BUCKET=${AWS_S3_BUCKET}
       - RABBITMQ_URL=amqp://rabbitmq:5672
-    volumes:
-      - ./services/storage-service:/app
-      - /app/node_modules
+      - NODE_ENV=production
+    restart: always
     depends_on:
       - rabbitmq
 
@@ -118,6 +109,7 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    restart: always
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -126,6 +118,7 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    restart: always
 
   redis:
     image: redis:latest
@@ -133,6 +126,7 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    restart: always
 
 volumes:
   mongodb_data:

@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  email             String         @unique
+  name              String?
+  password          String
+  credits           Int            @default(0)
+  stripeCustomerId  String?        @unique
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  subscription      Subscription?
+  creditPurchases   CreditPurchase[]
+  creditUsage       CreditUsage[]
+  billingInfo       BillingInfo?
+}
+
+model Subscription {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String    @unique @db.ObjectId
+  user                User      @relation(fields: [userId], references: [id])
+  planId              String
+  status              String    // active, inactive, cancelled
+  stripeSubscriptionId String   @unique
+  currentPeriodStart  DateTime
+  currentPeriodEnd    DateTime
+  cancelAtPeriodEnd   Boolean   @default(false)
+  billingCycle        String    // monthly, yearly
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model CreditPurchase {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String    @db.ObjectId
+  user            User      @relation(fields: [userId], references: [id])
+  amount          Int
+  cost            Float
+  status          String    // pending, completed, failed
+  paymentMethodId String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model CreditUsage {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  service     String    // copy, graphics, video, audio
+  creditsUsed Int
+  requestId   String
+  timestamp   DateTime  @default(now())
+  metadata    Json?
+}
+
+model BillingInfo {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String    @unique @db.ObjectId
+  user                User      @relation(fields: [userId], references: [id])
+  stripeCustomerId    String    @unique
+  defaultPaymentMethod Json?    // Stores payment method details
+  billingAddress      Json?     // Stores billing address
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+} 
