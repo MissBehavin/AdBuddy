@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:4000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/ai-ad-generator
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - copy-service
+      - graphics-service
+      - video-service
+      - audio-service
+
+  copy-service:
+    build:
+      context: ./services/copy-service
+      dockerfile: Dockerfile
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    volumes:
+      - ./services/copy-service:/app
+      - /app/node_modules
+    depends_on:
+      - rabbitmq
+
+  graphics-service:
+    build:
+      context: ./services/graphics-service
+      dockerfile: Dockerfile
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - STABLE_DIFFUSION_API_KEY=${STABLE_DIFFUSION_API_KEY}
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    volumes:
+      - ./services/graphics-service:/app
+      - /app/node_modules
+    depends_on:
+      - rabbitmq
+
+  video-service:
+    build:
+      context: ./services/video-service
+      dockerfile: Dockerfile
+    environment:
+      - PICTORY_API_KEY=${PICTORY_API_KEY}
+      - SYNTHESIA_API_KEY=${SYNTHESIA_API_KEY}
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    volumes:
+      - ./services/video-service:/app
+      - /app/node_modules
+    depends_on:
+      - rabbitmq
+
+  audio-service:
+    build:
+      context: ./services/audio-service
+      dockerfile: Dockerfile
+    environment:
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    volumes:
+      - ./services/audio-service:/app
+      - /app/node_modules
+    depends_on:
+      - rabbitmq
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  mongodb_data:
+  rabbitmq_data: 

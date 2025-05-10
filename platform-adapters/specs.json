@@ -1,0 +1,145 @@
+{
+  "tiktok": {
+    "video": {
+      "aspect_ratio": "9:16",
+      "max_duration": 60,
+      "min_duration": 5,
+      "max_file_size": "500MB",
+      "supported_formats": ["mp4", "mov"],
+      "resolution": {
+        "min": "720x1280",
+        "recommended": "1080x1920"
+      }
+    },
+    "text": {
+      "max_length": 2200,
+      "hashtags": {
+        "max_count": 30,
+        "max_length_per_tag": 30
+      }
+    }
+  },
+  "google_ads": {
+    "video": {
+      "aspect_ratio": "16:9",
+      "max_duration": 30,
+      "min_duration": 5,
+      "max_file_size": "256GB",
+      "supported_formats": ["mp4", "mov"],
+      "resolution": {
+        "min": "1280x720",
+        "recommended": "1920x1080"
+      }
+    },
+    "text": {
+      "headline": {
+        "max_length": 30
+      },
+      "description": {
+        "max_length": 90
+      }
+    }
+  },
+  "youtube": {
+    "video": {
+      "aspect_ratio": "16:9",
+      "max_duration": 60,
+      "min_duration": 5,
+      "max_file_size": "256GB",
+      "supported_formats": ["mp4", "mov", "avi"],
+      "resolution": {
+        "min": "1280x720",
+        "recommended": "1920x1080"
+      }
+    },
+    "text": {
+      "title": {
+        "max_length": 100
+      },
+      "description": {
+        "max_length": 5000
+      }
+    }
+  },
+  "bluesky": {
+    "image": {
+      "max_file_size": "5MB",
+      "supported_formats": ["jpg", "jpeg", "png", "gif"],
+      "resolution": {
+        "max": "2000x2000"
+      }
+    },
+    "text": {
+      "max_length": 300
+    }
+  },
+  "twitter": {
+    "video": {
+      "aspect_ratio": "16:9",
+      "max_duration": 140,
+      "min_duration": 0.5,
+      "max_file_size": "512MB",
+      "supported_formats": ["mp4"],
+      "resolution": {
+        "min": "1280x720",
+        "recommended": "1920x1080"
+      }
+    },
+    "image": {
+      "max_file_size": "5MB",
+      "supported_formats": ["jpg", "jpeg", "png", "gif"],
+      "resolution": {
+        "max": "4096x4096"
+      }
+    },
+    "text": {
+      "max_length": 280
+    }
+  },
+  "amazon": {
+    "image": {
+      "aspect_ratio": "1:1",
+      "max_file_size": "10MB",
+      "supported_formats": ["jpg", "jpeg", "png"],
+      "resolution": {
+        "min": "1000x1000",
+        "recommended": "2000x2000"
+      }
+    },
+    "text": {
+      "title": {
+        "max_length": 200
+      },
+      "description": {
+        "max_length": 2000
+      },
+      "bullet_points": {
+        "max_count": 5,
+        "max_length_per_point": 1000
+      }
+    }
+  },
+  "facebook": {
+    "video": {
+      "aspect_ratio": "16:9",
+      "max_duration": 240,
+      "min_duration": 1,
+      "max_file_size": "4GB",
+      "supported_formats": ["mp4", "mov"],
+      "resolution": {
+        "min": "1280x720",
+        "recommended": "1920x1080"
+      }
+    },
+    "image": {
+      "max_file_size": "30MB",
+      "supported_formats": ["jpg", "jpeg", "png", "gif"],
+      "resolution": {
+        "max": "4096x4096"
+      }
+    },
+    "text": {
+      "max_length": 2200
+    }
+  }
+} 
